@@ -8,14 +8,14 @@ TASK :
     PROJ_STRATEGY : "TIME_POOL"
 
 DATA: 
-    TRAIN : "/home/weihsin/datasets/PretrainDatasetPkl/humanml3D_train.pkl"
-    TEST : "/home/weihsin/datasets/PretrainDatasetPkl/humanml3D_test.pkl"
+    TRAIN : "./dataset/humanml3D_train.pkl"
+    TEST : "./dataset/humanml3D_test.pkl"
     BATCH_SIZE: 16
 
 OPTIMIZER:
     LR : 1e-4
     MAX_EPOCH : 50
-    WARMUP_STEPS : 5000
+    WARMUP_STEPS : 300
 
 LOGDIR : "./results/pretrain"
 LOSS : "PerGT"

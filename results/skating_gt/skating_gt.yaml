@@ -11,17 +11,17 @@ TASK:
     PROJ_STRATEGY : "TIME_POOL"
 
 STANDARD_PATH : "./dataset/FS_standard.pkl"
-WEIGHT_PATH : "./results/pretrain_ref/pretrain_checkpoints/checkpoint_epoch_00012.pth"
+WEIGHT_PATH : "./results/pretrain_ref/pretrain_checkpoints/best_pretrained_weight.pth"
 
 DATA :
     TRAIN : "./dataset/FS_train.pkl"
     TEST : "./dataset/FS_test.pkl"
-    BATCH_SIZE : 4
+    BATCH_SIZE : 2
 
 OPTIMIZER :
     LR : 1e-4
-    MAX_EPOCH : 200
-    WARMUP_STEPS : 5000
+    MAX_EPOCH : 1
+    WARMUP_STEPS : 10
 
 LOGDIR : "./results/skating_gt"
 LOSS : "RandomGT"

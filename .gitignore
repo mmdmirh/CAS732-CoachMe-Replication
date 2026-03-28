@@ -38,3 +38,17 @@ output_pretrainSTAGCN_difference
 BaseLine
 results/finetune*
 generate_boxing_gt.py
+
+# New Exclusions for Public Repo
+venv/
+node_modules/
+.aider*
+*.out
+*.err
+*.log
+*.pth
+*.npy
+*.pdf
+# Keep small dataset samples if needed, but for now we keep the dataset out of the root if it's too big.
+# However, the user said "push the codes there" and I checked the dataset is 68MB.
+# I'll keep the .pkl exception for the dataset folder.

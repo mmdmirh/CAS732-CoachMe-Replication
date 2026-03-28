@@ -194,7 +194,7 @@ def main():
     video_name_list = load_video_name(test_pkl_file)
 
     # Distributed Training.
-    dist.init_process_group(backend = 'nccl', init_method = 'env://')
+    dist.init_process_group(backend = 'gloo', init_method = 'env://')
     if dist.get_rank() == 0 :
         store = dist.TCPStore("127.0.0.1", 8082, dist.get_world_size(), True, timedelta(seconds = 30))
     else :
@@ -204,13 +204,18 @@ def main():
 
     # Distributed Training.
     id = dist.get_rank()
-    device = id % torch.cuda.device_count()
-    model = model.to(device)
-    torch.cuda.set_device(id)
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids = [device], output_device = device,
-                                                      find_unused_parameters = True)
-
-    scaler = torch.cuda.amp.GradScaler()
+    if torch.cuda.is_available():
+        device = id % torch.cuda.device_count()
+        model = model.to(device)
+        torch.cuda.set_device(id)
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids = [device], output_device = device,
+                                                          find_unused_parameters = True)
+        scaler = torch.cuda.amp.GradScaler()
+    else:
+        device = torch.device("cpu")
+        model = model.to(device)
+        model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters = True)
+        scaler = torch.cuda.amp.GradScaler(enabled=False)
     optimizer = torch.optim.AdamW(model.parameters(), lr = float(cfg.OPTIMIZER.LR))
     summary_writer = SummaryWriter(os.path.join(cfg.LOGDIR, 'train_logs'))
 

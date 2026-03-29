@@ -35,11 +35,9 @@ java -version || { echo >&2 "Java not found. METEOR will fail."; exit 1; }
 export TORCH_SHOW_CPP_STACKTRACES=1
 export NCCL_DEBUG=INFO
 
-# Run pre-training explicitly to catch the hidden error trace
-export MASTER_ADDR=localhost
-export MASTER_PORT=29505
-export WORLD_SIZE=1
-export RANK=0
-export LOCAL_RANK=0
-
-python main.py --cfg_file ./results/pretrain/pretrain.yaml
+# Run pre-training (single GPU, using torchrun)
+# Add --error-file to capture the stderr from process 0 reliably
+torchrun \
+    --nproc_per_node=1 \
+    --master_port=29505 \
+    main.py --cfg_file ./results/pretrain/pretrain.yaml

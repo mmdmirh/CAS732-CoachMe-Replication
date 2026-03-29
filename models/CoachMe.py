@@ -1,7 +1,9 @@
 from .HumanPosePerception import HumanPosePerception
 from .Projection import Projection
 import torch, os
+import torch.nn as nn
 import torch.distributed as dist
+from transformers import T5ForConditionalGeneration, AutoConfig
 
 class CoachMe(nn.Module) :
     def __init__(self, cfg) :

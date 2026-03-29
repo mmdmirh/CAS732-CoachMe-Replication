@@ -1,6 +1,3 @@
-from transformers import T5ForConditionalGeneration, AutoConfig
-from torch import nn
-from visualize_model import model_view, head_view
 from .HumanPosePerception import HumanPosePerception
 from .Projection import Projection
 import torch, os
@@ -184,6 +181,7 @@ class CoachMe(nn.Module) :
                                                     early_stopping = True)
         # Distributed Training.
         if not self.pretrain and dist.get_rank() == 0 :
+            from visualize_model import model_view, head_view
             decoded_text = tokenizer.convert_ids_to_tokens(generated_ids.sequences[0])
             out = self.LanguageModel(inputs_embeds = tokens[0].unsqueeze(0),
                                      decoder_input_ids = generated_ids.sequences[0].unsqueeze(0),

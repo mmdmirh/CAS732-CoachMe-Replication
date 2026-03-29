@@ -43,7 +43,12 @@ class CoachMe(nn.Module) :
 
         self.RGB_lifting = nn.Linear(128, 512)
         # Distributed Training.
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        elif torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+        else:
+            self.device = torch.device("cpu")
 
     # Get the difference feature.
     def get_diff_feat(self, user, standard, diff_way) :
@@ -72,9 +77,8 @@ class CoachMe(nn.Module) :
 
     # Get the projection feature.
     def get_proj_feat(self, motion_tokens, difference_tokens, ref, diff_type) :
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if ref and diff_type == 'Skeleton' :
-            tokens = torch.cat([motion_tokens, difference_tokens.to(device)], dim = -1)
+            tokens = torch.cat([motion_tokens, difference_tokens.to(self.device)], dim = -1)
             tokens, max_indices = self.Projection(tokens)
         elif ref and diff_type == 'RGB' :
             difference_tokens = self.RGB_lifting(difference_tokens)

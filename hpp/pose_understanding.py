@@ -72,7 +72,7 @@ class PoseUnderstanding(nn.Module) :
         N, C, T, V = skeleton_coords.size()
         skeleton_coords = skeleton_coords.permute(0, 3, 1, 2).contiguous().view(N, V * C, T)
         # Batch Normalization.
-        skeleton_coords = self.bn(skeleton_coords)
+        skeleton_coords = self.bn(skeleton_coords.to(self.bn.weight.device))
         skeleton_coords = skeleton_coords.view(N, V, C, T).permute(0, 2, 3, 1).contiguous().view(N, C, T, V)
 
         if self.hpp_way == 'STAGCN' :

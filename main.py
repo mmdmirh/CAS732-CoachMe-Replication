@@ -147,18 +147,18 @@ def train(cfg, train_dataloader, model, optimizer, scheduler, scaler, summary_wr
             # Calculate loss for every ground truth
             loss = outputs.loss
 
-        # Computes gradients using backpropagation.
-        loss.backward()
-        # Updates the model's parameters.
-        optimizer.step()
-        # Adjusts the learning rate.
+        # Backpropagation
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
         scheduler.step()
 
         # Distributed Training.
         loss[torch.isnan(loss)] = 0
-        dist.all_reduce(loss, async_op = False)
+        if dist.get_world_size() > 1 :
+            dist.all_reduce(loss, async_op = False)
         reduced_loss = loss / dist.get_world_size()
-        loss_list.append(reduced_loss.detach().cpu())
+        loss_list.append(reduced_loss.item())
         if dist.get_rank() == 0 :
             train_dataloader.set_postfix({'loss' : np.mean(loss_list),
                                           'lr' : scheduler.optimizer.param_groups[0]['lr']})
@@ -204,6 +204,7 @@ def main():
 
     # Distributed Training.
     id = dist.get_rank()
+    world_size = dist.get_world_size()
     if torch.cuda.is_available():
         device = id % torch.cuda.device_count()
         model = model.to(device)
@@ -211,10 +212,17 @@ def main():
         model = torch.nn.parallel.DistributedDataParallel(model, device_ids = [device], output_device = device,
                                                           find_unused_parameters = True)
         scaler = torch.cuda.amp.GradScaler()
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+        model = model.to(device)
+        if world_size > 1:
+            model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters = True)
+        scaler = torch.cuda.amp.GradScaler(enabled=False)
     else:
         device = torch.device("cpu")
         model = model.to(device)
-        model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters = True)
+        if world_size > 1:
+            model = torch.nn.parallel.DistributedDataParallel(model, find_unused_parameters = True)
         scaler = torch.cuda.amp.GradScaler(enabled=False)
     optimizer = torch.optim.AdamW(model.parameters(), lr = float(cfg.OPTIMIZER.LR))
     summary_writer = SummaryWriter(os.path.join(cfg.LOGDIR, 'train_logs'))

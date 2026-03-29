@@ -10,7 +10,8 @@
 
 # Load modules
 module load gcc arrow
-module load python/3.10
+module load python/3.11
+module load java/17.0.6
 module load scipy-stack
 
 # Use the persistent virtualenv we created on the login node

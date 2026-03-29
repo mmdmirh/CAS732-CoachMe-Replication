@@ -10,7 +10,7 @@ TASK :
 DATA: 
     TRAIN : "./dataset/humanml3D_train.pkl"
     TEST : "./dataset/humanml3D_test.pkl"
-    BATCH_SIZE: 16
+    BATCH_SIZE: 15
 
 OPTIMIZER:
     LR : 1e-4

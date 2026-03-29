@@ -9,7 +9,7 @@
 #SBATCH --job-name=coachme_test
 
 # Load modules
-module load gcc arrow
+module load gcc arrow/14.0.1
 module load python/3.11
 module load java/17.0.6
 module load scipy-stack

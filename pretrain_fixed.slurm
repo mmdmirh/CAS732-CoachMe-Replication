@@ -28,7 +28,15 @@ fi
 # Pre-run data verification
 python HumanML3D_generator/check_data.py
 
+# Verify Java is available for METEOR metric
+echo "Testing Java availability:"
+java -version || { echo >&2 "Java not found. METEOR will fail."; exit 1; }
+
+export TORCH_SHOW_CPP_STACKTRACES=1
+export NCCL_DEBUG=INFO
+
 # Run pre-training (single GPU, using torchrun)
+# Add --error-file to capture the stderr from process 0 reliably
 torchrun \
     --nproc_per_node=1 \
     --master_port=29505 \

@@ -46,6 +46,6 @@ def construct_dataloader(split,cfg,pkl_file):
         # Distributed Training
         dataset = DatasetLoader(cfg, cfg.TASK.PRETRAIN, pkl_file, train=False)
         sampler = torch.utils.data.distributed.DistributedSampler(dataset, shuffle=False)
-        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False, drop_last=True, sampler=sampler, collate_fn=collate_fn, num_workers=0)
+        dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False, drop_last=False, sampler=sampler, collate_fn=collate_fn, num_workers=0)
 
     return dataloader

@@ -35,6 +35,11 @@ java -version || { echo >&2 "Java not found. METEOR will fail."; exit 1; }
 export TORCH_SHOW_CPP_STACKTRACES=1
 export NCCL_DEBUG=INFO
 
+# Force HuggingFace to work OFFLINE using our pre-downloaded cache!
+export TRANSFORMERS_OFFLINE=1
+export HF_DATASETS_OFFLINE=1
+export HF_HUB_OFFLINE=1
+
 # Run pre-training (single GPU, using torchrun)
 # Add --error-file to capture the stderr from process 0 reliably
 torchrun \

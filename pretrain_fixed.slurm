@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu:1              # Request 1 GPU
 #SBATCH --cpus-per-task=4         # Request 4 CPUs
 #SBATCH --mem=32G                 # Request 32GB RAM
-#SBATCH --time=00:15:00           # 15 minutes for testing
+#SBATCH --time=04:00:00           # 4 hours for full pretraining
 #SBATCH --output=%j.out           # Standard output
 #SBATCH --error=%j.err            # Standard error
 #SBATCH --job-name=coachme_test

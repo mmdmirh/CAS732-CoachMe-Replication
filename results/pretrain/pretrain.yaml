@@ -14,7 +14,7 @@ DATA:
 
 OPTIMIZER:
     LR : 1e-4
-    MAX_EPOCH : 1
+    MAX_EPOCH : 50
     WARMUP_STEPS : 300
 
 LOGDIR : "./results/pretrain"

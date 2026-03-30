@@ -1,6 +1,8 @@
 # Python environment
 venv/
 .env
+__pycache__/
+*.pyc
 
 # Dataset large files
 HumanML3D_generator/amass_data/

@@ -36,7 +36,19 @@ def load_checkpoint(cfg, model, optimizer, name = None) :
         # Load weights that were previously pre-trained.
         # pretrain_total_params = sum(v.numel() for v in pretrain_checkpoint["model_state"].values())
         # print("Pretrain Parameter Number", pretrain_total_params)
-        model.module.load_state_dict(pretrain_checkpoint["model_state"], strict = False)
+        # Filter out parameters with shape mismatches (e.g. Projection layer differs between
+        # REF=False pretraining and REF=True fine-tuning). T5 and ST-GCN weights still transfer.
+        pretrain_state = pretrain_checkpoint["model_state"]
+        model_state = model.module.state_dict()
+        compatible_state = {
+            k: v for k, v in pretrain_state.items()
+            if k in model_state and v.shape == model_state[k].shape
+        }
+        skipped = [k for k in pretrain_state if k not in compatible_state]
+        if dist.get_rank() == 0 and skipped:
+            print(f"Skipped {len(skipped)} mismatched param(s): {skipped}")
+        model_state.update(compatible_state)
+        model.module.load_state_dict(model_state)
         '''
         print("Loaded pretrain parameters : ")
         for name in pretrainckpt["model_state"].keys() :
